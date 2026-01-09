@@ -19,12 +19,9 @@ struct SlotCount {
 class TripAnalyzer {
 private:
     unordered_map<string, long long> zoneCounts;    //total trips per zone
-    unordered_map<string, long long> slotCounts;    //total trips per (zone, hour)
-
-    void ingestFile(const string& line);         
+    unordered_map<string, long long> slotCounts;    //total trips per (zone, hour)   
 
 public:
-
     //Parse Trips.csv, skip dirty rows, never crash
     void ingestFile(const string& csvPath);
     
@@ -34,4 +31,5 @@ public:
     // Top K slots: count desc, zone asc, hour asc
     vector<SlotCount> topBusySlots(int k = 10) const;
 };
+
 
