@@ -3,6 +3,7 @@
 #include<sstream>
 #include<algorithm>
 #include<vector>
+#include<unordered_map>
 
 using namespace std;
 
@@ -11,7 +12,7 @@ using namespace std;
 void TripAnalyzer::ingestFile(const string& csvPath) {
     // TODO:
     // - empty file test
-    zone.Cpunts.clear();
+    zoneCounts.clear();
     slotCounts.clear();
     // - open file
     ifstream file(csvPath);
@@ -70,6 +71,7 @@ void TripAnalyzer::ingestFile(const string& csvPath) {
         zoneCounts[zone]++;
         slotCounts[zone + "_" + to_string(hour)]++;
     }
+    file.close();
 }
 
 vector<ZoneCount> TripAnalyzer::topZones(int k) const {
@@ -105,8 +107,8 @@ vector<SlotCount> TripAnalyzer::topBusySlots(int k) const {
     
         try{
             string zone = key.substr(0, pos);     //Zone before the underscore
-            int hour = stoi(key.substr(pos+1);   //Time after the underscore
-            result.push_back({zone, hour, p.second)};
+            int hour = stoi(key.substr(pos+1));   //Time after the underscore
+            results.push_back({zone, hour, pair.second});
         }
         catch(...){
             continue;         //skip corrupt entries
@@ -125,4 +127,5 @@ vector<SlotCount> TripAnalyzer::topBusySlots(int k) const {
         k = results.size();         //adjust k if it is a very large entry
     return vector<SlotCount>(results.begin(), results.begin() + k);           //return top k
 }
+
 
