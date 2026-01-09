@@ -1,5 +1,4 @@
-#ifndef ANALYZER_H
-#define ANALYZER_H
+#pragma once
 #include <string>
 #include <vector>
 #include<unordered_map>
@@ -16,6 +15,9 @@ struct SlotCount {
 };
 
 class TripAnalyzer {
+private:
+    std::unordered_map<std::string, long long> zoneCounts;
+    std::unordered_map<std::string, long long> slotCounts;
 public:
     //Parse Trips.csv, skip dirty rows, never crash
     void ingestFile(const std::string& csvPath);
@@ -27,6 +29,6 @@ public:
     std::vector<SlotCount> topBusySlots(int k = 10) const;
 };
 
-#endif
+
 
 
