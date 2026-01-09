@@ -21,13 +21,17 @@ private:
     unordered_map<string, long long> zoneCounts;    //total trips per zone
     unordered_map<string, long long> slotCounts;    //total trips per (zone, hour)
 
-public:
-    // Parse Trips.csv, skip dirty rows, never crash
-    void ingestFile(const std::string& csvPath);
+    void ingestFile(const string& line);         
 
+public:
+
+    //Parse Trips.csv, skip dirty rows, never crash
+    void ingestFile(const string& csvPath);
+    
     // Top K zones: count desc, zone asc
     vector<ZoneCount> topZones(int k = 10) const;
 
     // Top K slots: count desc, zone asc, hour asc
     vector<SlotCount> topBusySlots(int k = 10) const;
 };
+
