@@ -2,6 +2,7 @@
 #include<fstream>
 #include<sstream>
 #include<algorithm>
+#include<vector>
 
 using namespace std;
 
@@ -9,6 +10,9 @@ using namespace std;
 
 void TripAnalyzer::ingestFile(const string& csvPath) {
     // TODO:
+    // - empty file test
+    zone.Cpunts.clear();
+    slotCounts.clear();
     // - open file
     ifstream file(csvPath);
     if(!file.is_open())
@@ -64,15 +68,11 @@ void TripAnalyzer::ingestFile(const string& csvPath) {
 
         // - aggregate counts
         zoneCounts[zone]++;
-
-        string slotKey = zone + "_" + to_string(hour);
-        slotCounts[slotKey]++;
+        slotCounts[zone + "_" + to_string(hour)]++;
     }
-
-    file.close();
 }
 
-std::vector<ZoneCount> TripAnalyzer::topZones(int k) const {
+vector<ZoneCount> TripAnalyzer::topZones(int k) const {
     // TODO:
     // - convert from unordered_map to vector 
     vector<ZoneCount> results;
@@ -98,22 +98,19 @@ vector<SlotCount> TripAnalyzer::topBusySlots(int k) const {
     // - convert the entries of SlotCounts from map to struct
     vector<SlotCount> results;
     for(const auto& pair : slotCounts){
-        string key = pair.first;
+        const string& key = pair.first;
 
-        size_t underscorePos = key.rfind('_');          //Find the last underscore
-        if(underscorePos == string::npos) continue;
-        string zone = key.substr(0, underscorePos);     //Zone before the underscore
-        string hourStr = key.substr(underscorePos + 1);    //Time after the underscore
-        int hour; 
+        size_t pos = key.rfind('_');          //Find the last underscore
+        if(pos == string::npos) continue;
+    
         try{
-            hour = stoi(hourStr);   //convert hour
+            string zone = key.substr(0, pos);     //Zone before the underscore
+            int hour = stoi(key.substr(pos+1);   //Time after the underscore
+            result.push_back({zone, hour, p.second)};
         }
         catch(...){
             continue;         //skip corrupt entries
         }
-
-        results.push_back({zone, hour, pair.second});
-
     }
     // - sort by count desc, zone asc, hour asc:
     sort(results.begin(), results.end(), [](const SlotCount& a, const SlotCount& b){
@@ -124,7 +121,8 @@ vector<SlotCount> TripAnalyzer::topBusySlots(int k) const {
         return a.hour < b.hour;              //return lower hour first
     });
     // - return first k:
-    if(k > results.size())           
+    if(k > (int)results.size())           
         k = results.size();         //adjust k if it is a very large entry
     return vector<SlotCount>(results.begin(), results.begin() + k);           //return top k
 }
+
